@@ -6,11 +6,11 @@ from dotenv import load_dotenv
 
 
 # ============================================================
-# CAMINHOS DO PROJETO
+# TECHNOCRACYSI
+# SUPER INTELLIGENCE SYSTEM
 # ============================================================
 
 ROOT = Path(__file__).resolve().parent
-
 ASSETS = ROOT / "assets"
 
 CAPA = ASSETS / "capa 1.jpg"
@@ -18,31 +18,32 @@ LOGO = ASSETS / "logo 1.jpg"
 
 
 # ============================================================
-# CONFIGURAÇÃO
+# AMBIENTE
 # ============================================================
 
 load_dotenv(ROOT / ".env")
 
 
 # ============================================================
-# STREAMLIT CLOUD SECRETS
+# STREAMLIT SECRETS
 # ============================================================
 
 try:
+    secrets = st.secrets
 
-    if "GROQ_API_KEY" in st.secrets:
+    if "GROQ_API_KEY" in secrets:
         os.environ["GROQ_API_KEY"] = str(
-            st.secrets["GROQ_API_KEY"]
+            secrets["GROQ_API_KEY"]
         )
 
-    if "GROQ_MODEL" in st.secrets:
-        os.environ["GROQ_MODEL"] = str(
-            st.secrets["GROQ_MODEL"]
-        )
-
-    if "GROQ_BASE_URL" in st.secrets:
+    if "GROQ_BASE_URL" in secrets:
         os.environ["GROQ_BASE_URL"] = str(
-            st.secrets["GROQ_BASE_URL"]
+            secrets["GROQ_BASE_URL"]
+        )
+
+    if "GROQ_MODEL" in secrets:
+        os.environ["GROQ_MODEL"] = str(
+            secrets["GROQ_MODEL"]
         )
 
 except Exception:
@@ -50,7 +51,7 @@ except Exception:
 
 
 # ============================================================
-# CONFIGURAÇÃO DA PÁGINA
+# CONFIGURAÇÃO
 # ============================================================
 
 st.set_page_config(
@@ -62,7 +63,7 @@ st.set_page_config(
 
 
 # ============================================================
-# LOGO
+# LOGO DO STREAMLIT
 # ============================================================
 
 if LOGO.exists():
@@ -74,302 +75,234 @@ if LOGO.exists():
 
 
 # ============================================================
-# ESTILO
+# CSS
 # ============================================================
 
 st.markdown(
     """
-    <style>
+<style>
 
-    /* ======================================================
-       BASE
-       ====================================================== */
+.stApp {
 
-    .stApp {
+    background:
+        radial-gradient(
+            circle at 50% -20%,
+            #1b1b1b 0%,
+            #090909 35%,
+            #030303 75%,
+            #000000 100%
+        );
 
-        background:
-            radial-gradient(
-                circle at 50% -20%,
-                #1a1a1a 0%,
-                #090909 35%,
-                #030303 75%,
-                #000000 100%
-            );
+    color: #eeeeee;
+}
 
-        color: #eeeeee;
-    }
 
+/* =========================================================
+   HEADER
+   ========================================================= */
 
-    [data-testid="stHeader"] {
-        background: rgba(0, 0, 0, 0);
-    }
+[data-testid="stHeader"] {
+    background: rgba(0,0,0,0);
+}
 
 
-    /* ======================================================
-       SIDEBAR
-       ====================================================== */
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
 
-    section[data-testid="stSidebar"] {
+section[data-testid="stSidebar"] {
 
-        background:
-            linear-gradient(
-                180deg,
-                #080808 0%,
-                #030303 100%
-            );
+    background:
+        linear-gradient(
+            180deg,
+            #090909 0%,
+            #030303 100%
+        );
 
-        border-right: 1px solid #202020;
-    }
+    border-right: 1px solid #222222;
+}
 
 
-    /* ======================================================
-       TITULO
-       ====================================================== */
+/* =========================================================
+   TITULO
+   ========================================================= */
 
-    .tech-title {
+.tech-title {
 
-        text-align: center;
+    text-align: center;
 
-        font-size: 4rem;
+    font-size: 4rem;
 
-        font-weight: 800;
+    font-weight: 800;
 
-        letter-spacing: 0.18em;
+    letter-spacing: 0.18em;
 
-        color: #f2f2f2;
+    color: #f4f4f4;
 
-        text-shadow:
-            0 0 8px rgba(255,255,255,0.20),
-            0 0 30px rgba(255,255,255,0.08);
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.20),
+        0 0 30px rgba(255,255,255,0.08);
 
-        margin-top: 1rem;
+    margin-top: 1rem;
 
-        margin-bottom: 0;
-    }
+    margin-bottom: 0;
+}
 
 
-    .tech-subtitle {
+.tech-subtitle {
 
-        text-align: center;
+    text-align: center;
 
-        color: #666666;
+    color: #777777;
 
-        font-size: 0.75rem;
+    font-size: 0.78rem;
 
-        letter-spacing: 0.45em;
+    letter-spacing: 0.42em;
 
-        margin-top: 0.5rem;
+    margin-top: 0.5rem;
 
-        margin-bottom: 2.5rem;
-    }
+    margin-bottom: 2.5rem;
+}
 
 
-    /* ======================================================
-       STATUS
-       ====================================================== */
+/* =========================================================
+   STATUS
+   ========================================================= */
 
-    .system-status {
+.system-status {
 
-        border: 1px solid #252525;
+    border: 1px solid #252525;
 
-        background:
-            linear-gradient(
-                180deg,
-                #0c0c0c,
-                #050505
-            );
+    background:
+        linear-gradient(
+            180deg,
+            #0d0d0d,
+            #050505
+        );
 
-        border-radius: 10px;
+    border-radius: 10px;
 
-        padding: 0.8rem;
+    padding: 0.8rem;
 
-        text-align: center;
+    text-align: center;
 
-        color: #bdbdbd;
+    color: #cfcfcf;
 
-        font-size: 0.72rem;
+    font-size: 0.72rem;
 
-        letter-spacing: 0.15em;
+    letter-spacing: 0.15em;
+}
 
-        box-shadow:
-            0 0 25px rgba(255,255,255,0.025);
 
-        transition: all 0.2s ease;
-    }
+/* =========================================================
+   AGENTES
+   ========================================================= */
 
+.agent-card {
 
-    .system-status:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #0d0d0d,
+            #050505
+        );
 
-        border-color: #444444;
+    border: 1px solid #222222;
 
-        box-shadow:
-            0 0 30px rgba(255,255,255,0.06);
-    }
+    border-radius: 12px;
 
+    padding: 1.2rem;
 
-    /* ======================================================
-       AGENTES
-       ====================================================== */
+    min-height: 130px;
 
-    .agent-card {
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.025),
+        0 8px 30px rgba(0,0,0,0.35);
+}
 
-        background:
-            linear-gradient(
-                145deg,
-                #0c0c0c,
-                #050505
-            );
 
-        border: 1px solid #202020;
+.agent-title {
 
-        border-radius: 12px;
+    font-size: 0.85rem;
 
-        padding: 1.2rem;
+    font-weight: 700;
 
-        min-height: 125px;
+    letter-spacing: 0.16em;
 
-        box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.025),
-            0 8px 30px rgba(0,0,0,0.35);
+    color: #eeeeee;
 
-        transition:
-            transform 0.2s ease,
-            border-color 0.2s ease;
-    }
+    margin-bottom: 0.7rem;
+}
 
 
-    .agent-card:hover {
+.agent-description {
 
-        transform: translateY(-2px);
+    color: #777777;
 
-        border-color: #3a3a3a;
-    }
+    font-size: 0.76rem;
 
+    line-height: 1.5;
+}
 
-    .agent-title {
 
-        font-size: 0.85rem;
+/* =========================================================
+   CAPA
+   ========================================================= */
 
-        font-weight: 700;
+.hero-frame {
 
-        letter-spacing: 0.16em;
+    border: 1px solid #222222;
 
-        color: #e5e5e5;
-    }
+    border-radius: 14px;
 
+    overflow: hidden;
 
-    .agent-description {
+    background: #050505;
 
-        color: #666666;
+    box-shadow:
+        0 15px 50px rgba(0,0,0,0.55);
 
-        font-size: 0.76rem;
+    margin-top: 1rem;
 
-        margin-top: 0.7rem;
+    margin-bottom: 1rem;
+}
 
-        line-height: 1.5;
-    }
 
+/* =========================================================
+   CHAT
+   ========================================================= */
 
-    /* ======================================================
-       IMAGEM DA CAPA
-       ====================================================== */
+[data-testid="stChatMessage"] {
 
-    .hero-frame {
+    background: #070707;
 
-        border: 1px solid #202020;
+    border: 1px solid #1c1c1c;
 
-        border-radius: 14px;
+    border-radius: 12px;
+}
 
-        overflow: hidden;
 
-        background: #050505;
+/* =========================================================
+   FOOTER
+   ========================================================= */
 
-        box-shadow:
-            0 15px 50px rgba(0,0,0,0.5);
+.tech-footer {
 
-        margin-top: 1rem;
+    text-align: center;
 
-        margin-bottom: 1rem;
-    }
+    color: #444444;
 
+    font-size: 0.65rem;
 
-    /* ======================================================
-       CHAT
-       ====================================================== */
+    letter-spacing: 0.2em;
 
-    [data-testid="stChatMessage"] {
+    margin-top: 3rem;
 
-        background: #070707;
+    padding-bottom: 1rem;
+}
 
-        border: 1px solid #1c1c1c;
-
-        border-radius: 12px;
-    }
-
-
-    [data-testid="stChatInput"] {
-
-        border-color: #292929 !important;
-    }
-
-
-    /* ======================================================
-       DIVISORES
-       ====================================================== */
-
-    hr {
-
-        border-color: #1c1c1c !important;
-    }
-
-
-    /* ======================================================
-       BOTÕES
-       ====================================================== */
-
-    .stButton > button {
-
-        background: #0b0b0b;
-
-        color: #dddddd;
-
-        border: 1px solid #292929;
-
-        border-radius: 8px;
-    }
-
-
-    .stButton > button:hover {
-
-        border-color: #555555;
-
-        color: white;
-
-        background: #111111;
-    }
-
-
-    /* ======================================================
-       FOOTER
-       ====================================================== */
-
-    .tech-footer {
-
-        text-align: center;
-
-        color: #3f3f3f;
-
-        font-size: 0.65rem;
-
-        letter-spacing: 0.2em;
-
-        margin-top: 3rem;
-
-        padding-bottom: 1rem;
-    }
-
-    </style>
-    """,
+</style>
+""",
     unsafe_allow_html=True
 )
 
@@ -387,52 +320,58 @@ with st.sidebar:
             width=180
         )
 
-    st.markdown("## TECHNOCRACYSI")
+    st.markdown(
+        "## TECHNOCRACYSI"
+    )
 
     st.caption(
-        "COGNITIVE INTELLIGENCE SYSTEM"
+        "SUPER INTELLIGENCE SYSTEM"
     )
 
     st.divider()
 
-    st.markdown("### SYSTEM")
+    st.markdown(
+        "### SYSTEM"
+    )
 
     st.markdown(
         """
-        **STATUS**
+**STATUS**
 
-        ● ONLINE
+● ONLINE
 
-        **ENGINE**
+**ENGINE**
 
-        Groq / OpenAI-compatible
+Groq / OpenAI-compatible
 
-        **ARCHITECTURE**
+**ARCHITECTURE**
 
-        Research → Analysis → Critic → Synthesis
-        """
+Research → Analysis → Critic → Synthesis
+"""
     )
 
     st.divider()
 
-    st.markdown("### CORE")
+    st.markdown(
+        "### CORE"
+    )
 
     st.markdown(
         """
-        `RESEARCH`
+`RESEARCH`
 
-        ↓
+↓
 
-        `ANALYSIS`
+`ANALYSIS`
 
-        ↓
+↓
 
-        `CRITIC`
+`CRITIC`
 
-        ↓
+↓
 
-        `SYNTHESIS`
-        """
+`SYNTHESIS`
+"""
     )
 
     st.divider()
@@ -448,7 +387,7 @@ with st.sidebar:
 
 
 # ============================================================
-# CABEÇALHO
+# HEADER PRINCIPAL
 # ============================================================
 
 st.markdown(
@@ -458,7 +397,7 @@ st.markdown(
 
 st.markdown(
     '<div class="tech-subtitle">'
-    'COGNITIVE INTELLIGENCE SYSTEM'
+    'SUPER INTELLIGENCE SYSTEM'
     '</div>',
     unsafe_allow_html=True
 )
@@ -474,9 +413,11 @@ c1, c2, c3, c4 = st.columns(4)
 with c1:
 
     st.markdown(
-        '<div class="system-status">'
-        '● SYSTEM ONLINE'
-        '</div>',
+        """
+<div class="system-status">
+● SYSTEM ONLINE
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -484,9 +425,11 @@ with c1:
 with c2:
 
     st.markdown(
-        '<div class="system-status">'
-        'RESEARCH'
-        '</div>',
+        """
+<div class="system-status">
+RESEARCH
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -494,9 +437,11 @@ with c2:
 with c3:
 
     st.markdown(
-        '<div class="system-status">'
-        'ANALYSIS'
-        '</div>',
+        """
+<div class="system-status">
+ANALYSIS
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -504,9 +449,11 @@ with c3:
 with c4:
 
     st.markdown(
-        '<div class="system-status">'
-        'SYNTHESIS'
-        '</div>',
+        """
+<div class="system-status">
+SYNTHESIS
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -525,19 +472,19 @@ with a1:
 
     st.markdown(
         """
-        <div class="agent-card">
+<div class="agent-card">
 
-            <div class="agent-title">
-                RESEARCHER
-            </div>
+<div class="agent-title">
+RESEARCHER
+</div>
 
-            <div class="agent-description">
-                Pesquisa, coleta e organiza evidências
-                relevantes para o problema.
-            </div>
+<div class="agent-description">
+Pesquisa, coleta e organiza evidências
+relevantes para o problema.
+</div>
 
-        </div>
-        """,
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -546,19 +493,19 @@ with a2:
 
     st.markdown(
         """
-        <div class="agent-card">
+<div class="agent-card">
 
-            <div class="agent-title">
-                ANALYST
-            </div>
+<div class="agent-title">
+ANALYST
+</div>
 
-            <div class="agent-description">
-                Examina relações, padrões, hipóteses
-                e possíveis explicações.
-            </div>
+<div class="agent-description">
+Examina relações, padrões, hipóteses
+e possíveis explicações.
+</div>
 
-        </div>
-        """,
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -567,19 +514,19 @@ with a3:
 
     st.markdown(
         """
-        <div class="agent-card">
+<div class="agent-card">
 
-            <div class="agent-title">
-                CRITIC
-            </div>
+<div class="agent-title">
+CRITIC
+</div>
 
-            <div class="agent-description">
-                Procura contradições, inconsistências
-                e pontos fracos.
-            </div>
+<div class="agent-description">
+Procura contradições, inconsistências
+e pontos fracos.
+</div>
 
-        </div>
-        """,
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -588,19 +535,19 @@ with a4:
 
     st.markdown(
         """
-        <div class="agent-card">
+<div class="agent-card">
 
-            <div class="agent-title">
-                SYNTHESIZER
-            </div>
+<div class="agent-title">
+SYNTHESIZER
+</div>
 
-            <div class="agent-description">
-                Integra os resultados e produz
-                a síntese final.
-            </div>
+<div class="agent-description">
+Integra os resultados e produz
+a síntese final.
+</div>
 
-        </div>
-        """,
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -632,7 +579,11 @@ if CAPA.exists():
 else:
 
     st.warning(
-        "Capa não encontrada: assets/capa 1.jpg"
+        "Imagem de capa não encontrada."
+    )
+
+    st.caption(
+        f"Caminho esperado: {CAPA}"
     )
 
 
@@ -640,13 +591,23 @@ else:
 # CHAT
 # ============================================================
 
-st.write("")
-
 st.divider()
 
+st.markdown(
+    "## INTERFACE DE INTELIGÊNCIA"
+)
+
+
+# ============================================================
+# IMPORTAÇÃO DO CÉREBRO
+# ============================================================
 
 from core.brain import ask
 
+
+# ============================================================
+# MEMÓRIA DA SESSÃO
+# ============================================================
 
 if "messages" not in st.session_state:
 
@@ -705,13 +666,6 @@ if prompt:
 
                 response = ask(prompt)
 
-                if response is None:
-
-                    response = (
-                        "O sistema não retornou "
-                        "uma resposta."
-                    )
-
                 response = str(response)
 
                 st.markdown(response)
@@ -748,12 +702,12 @@ if prompt:
 
 st.markdown(
     """
-    <div class="tech-footer">
+<div class="tech-footer">
 
-        TECHNOCRACYSI ·
-        COGNITIVE INTELLIGENCE SYSTEM
+TECHNOCRACYSI ·
+SUPER INTELLIGENCE SYSTEM
 
-    </div>
-    """,
+</div>
+""",
     unsafe_allow_html=True
 )
