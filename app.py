@@ -4,18 +4,32 @@ from pathlib import Path
 import streamlit as st
 from dotenv import load_dotenv
 
+
+# ============================================================
+# CAMINHOS DO PROJETO
+# ============================================================
+
 ROOT = Path(__file__).resolve().parent
+
+ASSETS = ROOT / "assets"
+
+CAPA = ASSETS / "capa 1.jpg"
+LOGO = ASSETS / "logo 1.jpg"
+
 
 # ============================================================
 # CONFIGURAÇÃO
 # ============================================================
 
-# Carrega o .env quando executado localmente.
 load_dotenv(ROOT / ".env")
 
-# No Streamlit Cloud, os Secrets podem sobrescrever
-# as variáveis carregadas pelo .env.
+
+# ============================================================
+# STREAMLIT CLOUD SECRETS
+# ============================================================
+
 try:
+
     if "GROQ_API_KEY" in st.secrets:
         os.environ["GROQ_API_KEY"] = str(
             st.secrets["GROQ_API_KEY"]
@@ -36,7 +50,7 @@ except Exception:
 
 
 # ============================================================
-# STREAMLIT
+# CONFIGURAÇÃO DA PÁGINA
 # ============================================================
 
 st.set_page_config(
@@ -48,7 +62,19 @@ st.set_page_config(
 
 
 # ============================================================
-# ESTILO VISUAL
+# LOGO
+# ============================================================
+
+if LOGO.exists():
+
+    st.logo(
+        str(LOGO),
+        icon_image=str(LOGO)
+    )
+
+
+# ============================================================
+# ESTILO
 # ============================================================
 
 st.markdown(
@@ -60,6 +86,7 @@ st.markdown(
        ====================================================== */
 
     .stApp {
+
         background:
             radial-gradient(
                 circle at 50% -20%,
@@ -72,19 +99,18 @@ st.markdown(
         color: #eeeeee;
     }
 
-    header {
-        background: transparent !important;
-    }
 
     [data-testid="stHeader"] {
         background: rgba(0, 0, 0, 0);
     }
+
 
     /* ======================================================
        SIDEBAR
        ====================================================== */
 
     section[data-testid="stSidebar"] {
+
         background:
             linear-gradient(
                 180deg,
@@ -95,14 +121,17 @@ st.markdown(
         border-right: 1px solid #202020;
     }
 
+
     /* ======================================================
        TITULO
        ====================================================== */
 
     .tech-title {
+
         text-align: center;
 
         font-size: 4rem;
+
         font-weight: 800;
 
         letter-spacing: 0.18em;
@@ -110,14 +139,17 @@ st.markdown(
         color: #f2f2f2;
 
         text-shadow:
-            0 0 8px rgba(255, 255, 255, 0.20),
-            0 0 30px rgba(255, 255, 255, 0.08);
+            0 0 8px rgba(255,255,255,0.20),
+            0 0 30px rgba(255,255,255,0.08);
 
         margin-top: 1rem;
+
         margin-bottom: 0;
     }
 
+
     .tech-subtitle {
+
         text-align: center;
 
         color: #666666;
@@ -127,14 +159,17 @@ st.markdown(
         letter-spacing: 0.45em;
 
         margin-top: 0.5rem;
+
         margin-bottom: 2.5rem;
     }
+
 
     /* ======================================================
        STATUS
        ====================================================== */
 
     .system-status {
+
         border: 1px solid #252525;
 
         background:
@@ -157,23 +192,27 @@ st.markdown(
         letter-spacing: 0.15em;
 
         box-shadow:
-            0 0 25px rgba(255, 255, 255, 0.025);
+            0 0 25px rgba(255,255,255,0.025);
 
         transition: all 0.2s ease;
     }
 
+
     .system-status:hover {
+
         border-color: #444444;
 
         box-shadow:
-            0 0 30px rgba(255, 255, 255, 0.06);
+            0 0 30px rgba(255,255,255,0.06);
     }
+
 
     /* ======================================================
        AGENTES
        ====================================================== */
 
     .agent-card {
+
         background:
             linear-gradient(
                 145deg,
@@ -190,21 +229,25 @@ st.markdown(
         min-height: 125px;
 
         box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.025),
-            0 8px 30px rgba(0, 0, 0, 0.35);
+            inset 0 1px 0 rgba(255,255,255,0.025),
+            0 8px 30px rgba(0,0,0,0.35);
 
         transition:
             transform 0.2s ease,
             border-color 0.2s ease;
     }
 
+
     .agent-card:hover {
+
         transform: translateY(-2px);
 
         border-color: #3a3a3a;
     }
 
+
     .agent-title {
+
         font-size: 0.85rem;
 
         font-weight: 700;
@@ -214,7 +257,9 @@ st.markdown(
         color: #e5e5e5;
     }
 
+
     .agent-description {
+
         color: #666666;
 
         font-size: 0.76rem;
@@ -224,57 +269,13 @@ st.markdown(
         line-height: 1.5;
     }
 
-    /* ======================================================
-       CHAT
-       ====================================================== */
-
-    [data-testid="stChatMessage"] {
-        background: #070707;
-
-        border: 1px solid #1c1c1c;
-
-        border-radius: 12px;
-    }
-
-    [data-testid="stChatInput"] {
-        border-color: #292929 !important;
-    }
 
     /* ======================================================
-       DIVISORES
-       ====================================================== */
-
-    hr {
-        border-color: #1c1c1c !important;
-    }
-
-    /* ======================================================
-       BOTÕES
-       ====================================================== */
-
-    .stButton > button {
-        background: #0b0b0b;
-
-        color: #dddddd;
-
-        border: 1px solid #292929;
-
-        border-radius: 8px;
-    }
-
-    .stButton > button:hover {
-        border-color: #555555;
-
-        color: white;
-
-        background: #111111;
-    }
-
-    /* ======================================================
-       IMAGEM PRINCIPAL
+       IMAGEM DA CAPA
        ====================================================== */
 
     .hero-frame {
+
         border: 1px solid #202020;
 
         border-radius: 14px;
@@ -284,17 +285,76 @@ st.markdown(
         background: #050505;
 
         box-shadow:
-            0 15px 50px rgba(0, 0, 0, 0.5);
+            0 15px 50px rgba(0,0,0,0.5);
 
         margin-top: 1rem;
+
         margin-bottom: 1rem;
     }
+
+
+    /* ======================================================
+       CHAT
+       ====================================================== */
+
+    [data-testid="stChatMessage"] {
+
+        background: #070707;
+
+        border: 1px solid #1c1c1c;
+
+        border-radius: 12px;
+    }
+
+
+    [data-testid="stChatInput"] {
+
+        border-color: #292929 !important;
+    }
+
+
+    /* ======================================================
+       DIVISORES
+       ====================================================== */
+
+    hr {
+
+        border-color: #1c1c1c !important;
+    }
+
+
+    /* ======================================================
+       BOTÕES
+       ====================================================== */
+
+    .stButton > button {
+
+        background: #0b0b0b;
+
+        color: #dddddd;
+
+        border: 1px solid #292929;
+
+        border-radius: 8px;
+    }
+
+
+    .stButton > button:hover {
+
+        border-color: #555555;
+
+        color: white;
+
+        background: #111111;
+    }
+
 
     /* ======================================================
        FOOTER
        ====================================================== */
 
     .tech-footer {
+
         text-align: center;
 
         color: #3f3f3f;
@@ -310,7 +370,7 @@ st.markdown(
 
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
 
@@ -320,9 +380,18 @@ st.markdown(
 
 with st.sidebar:
 
-    st.markdown("## ◉ TECHNOCRACYSI")
+    if LOGO.exists():
 
-    st.caption("COGNITIVE INTELLIGENCE SYSTEM")
+        st.image(
+            str(LOGO),
+            width=180
+        )
+
+    st.markdown("## TECHNOCRACYSI")
+
+    st.caption(
+        "COGNITIVE INTELLIGENCE SYSTEM"
+    )
 
     st.divider()
 
@@ -373,7 +442,9 @@ with st.sidebar:
         "modelo não configurado"
     )
 
-    st.caption(f"MODEL: {model_name}")
+    st.caption(
+        f"MODEL: {model_name}"
+    )
 
 
 # ============================================================
@@ -399,6 +470,7 @@ st.markdown(
 
 c1, c2, c3, c4 = st.columns(4)
 
+
 with c1:
 
     st.markdown(
@@ -407,6 +479,7 @@ with c1:
         '</div>',
         unsafe_allow_html=True
     )
+
 
 with c2:
 
@@ -417,6 +490,7 @@ with c2:
         unsafe_allow_html=True
     )
 
+
 with c3:
 
     st.markdown(
@@ -425,6 +499,7 @@ with c3:
         '</div>',
         unsafe_allow_html=True
     )
+
 
 with c4:
 
@@ -444,6 +519,7 @@ st.write("")
 # ============================================================
 
 a1, a2, a3, a4 = st.columns(4)
+
 
 with a1:
 
@@ -530,14 +606,13 @@ with a4:
 
 
 # ============================================================
-# IMAGEM PRINCIPAL
+# CAPA
 # ============================================================
 
 st.write("")
 
-image_path = ROOT / "assets" / "technocracysi.png"
 
-if image_path.exists():
+if CAPA.exists():
 
     st.markdown(
         '<div class="hero-frame">',
@@ -545,13 +620,19 @@ if image_path.exists():
     )
 
     st.image(
-        str(image_path),
+        str(CAPA),
         use_container_width=True
     )
 
     st.markdown(
         '</div>',
         unsafe_allow_html=True
+    )
+
+else:
+
+    st.warning(
+        "Capa não encontrada: assets/capa 1.jpg"
     )
 
 
@@ -562,6 +643,7 @@ if image_path.exists():
 st.write("")
 
 st.divider()
+
 
 from core.brain import ask
 
@@ -577,7 +659,9 @@ if "messages" not in st.session_state:
 
 for message in st.session_state.messages:
 
-    with st.chat_message(message["role"]):
+    with st.chat_message(
+        message["role"]
+    ):
 
         st.markdown(
             message["content"]
@@ -609,6 +693,7 @@ if prompt:
     with st.chat_message("user"):
 
         st.markdown(prompt)
+
 
     with st.chat_message("assistant"):
 
@@ -664,7 +749,10 @@ if prompt:
 st.markdown(
     """
     <div class="tech-footer">
-        TECHNOCRACYSI · COGNITIVE INTELLIGENCE SYSTEM
+
+        TECHNOCRACYSI ·
+        COGNITIVE INTELLIGENCE SYSTEM
+
     </div>
     """,
     unsafe_allow_html=True
