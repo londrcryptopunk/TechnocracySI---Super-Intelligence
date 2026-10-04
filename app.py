@@ -1,9 +1,38 @@
-﻿import os
-import streamlit as st
+@'
+import os
+from pathlib import Path
 
+import streamlit as st
+from dotenv import load_dotenv
+
+ROOT = Path(__file__).resolve().parent
 
 # ============================================================
 # CONFIGURAÇÃO
+# ============================================================
+
+load_dotenv(ROOT / ".env")
+
+# Streamlit Cloud pode fornecer secrets.
+# Localmente, o .env continua sendo suficiente.
+try:
+    secrets = st.secrets
+
+    if "GROQ_API_KEY" in secrets:
+        os.environ["GROQ_API_KEY"] = str(secrets["GROQ_API_KEY"])
+
+    if "GROQ_MODEL" in secrets:
+        os.environ["GROQ_MODEL"] = str(secrets["GROQ_MODEL"])
+
+    if "GROQ_BASE_URL" in secrets:
+        os.environ["GROQ_BASE_URL"] = str(secrets["GROQ_BASE_URL"])
+
+except Exception:
+    pass
+
+
+# ============================================================
+# STREAMLIT
 # ============================================================
 
 st.set_page_config(
@@ -15,132 +44,261 @@ st.set_page_config(
 
 
 # ============================================================
-# CARREGAR SECRET DA STREAMLIT
-# ============================================================
-
-if "GROQ_API_KEY" in st.secrets:
-    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
-
-if "GROQ_MODEL" in st.secrets:
-    os.environ["GROQ_MODEL"] = st.secrets["GROQ_MODEL"]
-
-if "GROQ_BASE_URL" in st.secrets:
-    os.environ["GROQ_BASE_URL"] = st.secrets["GROQ_BASE_URL"]
-
-
-# Importar somente depois das variáveis existirem
-from core.brain import ask
-
-
-# ============================================================
-# CSS — TECHNOCRACYSI
+# ESTILO VISUAL
 # ============================================================
 
 st.markdown(
     """
     <style>
 
+    /* ======================================================
+       BASE
+       ====================================================== */
+
     .stApp {
         background:
             radial-gradient(
-                circle at 50% 0%,
-                rgba(60,60,60,0.20),
-                transparent 38%
-            ),
-            #050505;
-        color: #e8e8e8;
+                circle at 50% -20%,
+                #1a1a1a 0%,
+                #090909 35%,
+                #030303 75%,
+                #000000 100%
+            );
+
+        color: #eeeeee;
+    }
+
+    header {
+        background: transparent !important;
     }
 
     [data-testid="stHeader"] {
         background: rgba(0,0,0,0);
     }
 
-    [data-testid="stSidebar"] {
-        background: #080808;
+    /* ======================================================
+       SIDEBAR
+       ====================================================== */
+
+    section[data-testid="stSidebar"] {
+        background:
+            linear-gradient(
+                180deg,
+                #080808 0%,
+                #030303 100%
+            );
+
         border-right: 1px solid #202020;
     }
 
+    /* ======================================================
+       TITULO
+       ====================================================== */
+
     .tech-title {
-        font-family: Arial, sans-serif;
-        font-size: 42px;
-        font-weight: 700;
-        letter-spacing: 8px;
         text-align: center;
-        margin-top: 25px;
-        margin-bottom: 0px;
+
+        font-size: 4rem;
+        font-weight: 800;
+
+        letter-spacing: 0.18em;
+
+        color: #f2f2f2;
+
+        text-shadow:
+            0 0 8px rgba(255,255,255,0.20),
+            0 0 30px rgba(255,255,255,0.08);
+
+        margin-top: 1rem;
+        margin-bottom: 0;
     }
 
     .tech-subtitle {
         text-align: center;
-        color: #777;
-        letter-spacing: 5px;
-        font-size: 11px;
-        margin-bottom: 35px;
+
+        color: #666666;
+
+        font-size: 0.75rem;
+
+        letter-spacing: 0.45em;
+
+        margin-top: 0.5rem;
+        margin-bottom: 2.5rem;
     }
 
-    .status {
-        text-align: center;
-        color: #aaa;
-        font-size: 11px;
-        letter-spacing: 3px;
-        margin-bottom: 25px;
-    }
+    /* ======================================================
+       STATUS
+       ====================================================== */
 
-    .status-dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #d9d9d9;
-        margin-right: 8px;
-        box-shadow: 0 0 12px rgba(255,255,255,0.7);
-    }
+    .system-status {
+        border: 1px solid #252525;
 
-    .panel {
-        background: rgba(12,12,12,0.85);
-        border: 1px solid #222;
+        background:
+            linear-gradient(
+                180deg,
+                #0c0c0c,
+                #050505
+            );
+
         border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
+
+        padding: 0.8rem;
+
+        text-align: center;
+
+        color: #bdbdbd;
+
+        font-size: 0.72rem;
+
+        letter-spacing: 0.15em;
+
+        box-shadow:
+            0 0 25px rgba(255,255,255,0.025);
+
+        transition: all 0.2s ease;
     }
 
-    .panel-title {
-        font-size: 11px;
-        letter-spacing: 3px;
-        color: #777;
-        margin-bottom: 10px;
+    .system-status:hover {
+        border-color: #444444;
+
+        box-shadow:
+            0 0 30px rgba(255,255,255,0.06);
     }
+
+    /* ======================================================
+       AGENTS
+       ====================================================== */
 
     .agent-card {
-        background: #0c0c0c;
+        background:
+            linear-gradient(
+                145deg,
+                #0c0c0c,
+                #050505
+            );
+
         border: 1px solid #202020;
+
+        border-radius: 12px;
+
+        padding: 1.2rem;
+
+        min-height: 125px;
+
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.025),
+            0 8px 30px rgba(0,0,0,0.35);
+
+        transition:
+            transform 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .agent-card:hover {
+        transform: translateY(-2px);
+
+        border-color: #3a3a3a;
+    }
+
+    .agent-title {
+        font-size: 0.85rem;
+
+        font-weight: 700;
+
+        letter-spacing: 0.16em;
+
+        color: #e5e5e5;
+    }
+
+    .agent-description {
+        color: #666666;
+
+        font-size: 0.76rem;
+
+        margin-top: 0.7rem;
+
+        line-height: 1.5;
+    }
+
+    /* ======================================================
+       CHAT
+       ====================================================== */
+
+    [data-testid="stChatMessage"] {
+        background: #070707;
+
+        border: 1px solid #1c1c1c;
+
+        border-radius: 12px;
+    }
+
+    [data-testid="stChatInput"] {
+        border-color: #292929 !important;
+    }
+
+    /* ======================================================
+       DIVISORES
+       ====================================================== */
+
+    hr {
+        border-color: #1c1c1c !important;
+    }
+
+    /* ======================================================
+       BOTÕES
+       ====================================================== */
+
+    .stButton > button {
+        background: #0b0b0b;
+
+        color: #dddddd;
+
+        border: 1px solid #292929;
+
         border-radius: 8px;
-        padding: 15px;
+    }
+
+    .stButton > button:hover {
+        border-color: #555555;
+
+        color: white;
+
+        background: #111111;
+    }
+
+    /* ======================================================
+       IMAGEM / LOGO
+       ====================================================== */
+
+    .hero-frame {
+        border: 1px solid #202020;
+
+        border-radius: 14px;
+
+        overflow: hidden;
+
+        background: #050505;
+
+        box-shadow:
+            0 15px 50px rgba(0,0,0,0.5);
+    }
+
+    /* ======================================================
+       FOOTER
+       ====================================================== */
+
+    .tech-footer {
         text-align: center;
-    }
 
-    .agent-name {
-        font-size: 12px;
-        letter-spacing: 2px;
-        color: #aaa;
-    }
+        color: #3f3f3f;
 
-    .agent-state {
-        margin-top: 8px;
-        font-size: 10px;
-        color: #666;
-    }
+        font-size: 0.65rem;
 
-    .response {
-        background: #090909;
-        border-left: 2px solid #777;
-        padding: 20px;
-        border-radius: 4px;
-        line-height: 1.7;
-    }
+        letter-spacing: 0.2em;
 
-    footer {
-        visibility: hidden;
+        margin-top: 3rem;
+
+        padding-bottom: 1rem;
     }
 
     </style>
@@ -155,46 +313,64 @@ st.markdown(
 
 with st.sidebar:
 
-    st.markdown("## TECHNOCRACYSI")
+    st.markdown("## ◉ TECHNOCΛCYSI")
 
-    st.markdown("---")
+    st.caption("COGNITIVE INTELLIGENCE SYSTEM")
 
-    st.markdown("### COGNITIVE CORE")
+    st.divider()
+
+    st.markdown("### SYSTEM")
 
     st.markdown(
         """
-        **● CORE ONLINE**
+        **STATUS**
 
-        **● REASONING**
+        ● ONLINE
 
-        **● ANALYSIS**
+        **ENGINE**
 
-        **● SYNTHESIS**
+        Groq / OpenAI-compatible
 
-        **● CRITIQUE**
+        **ARCHITECTURE**
+
+        Research → Analysis → Critic → Synthesis
         """
     )
 
-    st.markdown("---")
+    st.divider()
 
-    st.markdown("### ENGINE")
+    st.markdown("### CORE")
 
-    st.caption(
-        os.getenv(
-            "GROQ_MODEL",
-            "openai/gpt-oss-120b"
-        )
+    st.markdown(
+        """
+        `RESEARCH`
+
+        ↓
+
+        `ANALYSIS`
+
+        ↓
+
+        `CRITIC`
+
+        ↓
+
+        `SYNTHESIS`
+        """
     )
 
-    st.markdown("---")
+    st.divider()
 
-    st.caption("TechnocracySI 0.2.0")
+    model_name = os.getenv(
+        "GROQ_MODEL",
+        "modelo não configurado"
+    )
 
-    st.caption("Experimental Intelligence Platform")
+    st.caption(f"MODEL: {model_name}")
 
 
 # ============================================================
-# HEADER
+# CABEÇALHO
 # ============================================================
 
 st.markdown(
@@ -207,51 +383,140 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown(
-    """
-    <div class="status">
-        <span class="status-dot"></span>
-        SYSTEM ONLINE
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+
+# ============================================================
+# STATUS
+# ============================================================
+
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+    st.markdown(
+        '<div class="system-status">● SYSTEM ONLINE</div>',
+        unsafe_allow_html=True
+    )
+
+with c2:
+    st.markdown(
+        '<div class="system-status">RESEARCH</div>',
+        unsafe_allow_html=True
+    )
+
+with c3:
+    st.markdown(
+        '<div class="system-status">ANALYSIS</div>',
+        unsafe_allow_html=True
+    )
+
+with c4:
+    st.markdown(
+        '<div class="system-status">SYNTHESIS</div>',
+        unsafe_allow_html=True
+    )
+
+
+st.write("")
 
 
 # ============================================================
-# AGENTS
+# AGENTES
 # ============================================================
 
-cols = st.columns(4)
+a1, a2, a3, a4 = st.columns(4)
 
-agents = [
-    ("RESEARCH", "EVIDENCE"),
-    ("ANALYSIS", "REASONING"),
-    ("CRITIC", "VERIFICATION"),
-    ("SYNTHESIS", "CONCLUSION"),
-]
-
-for col, (name, function) in zip(cols, agents):
-
-    with col:
-
-        st.markdown(
-            f"""
-            <div class="agent-card">
-                <div class="agent-name">{name}</div>
-                <div class="agent-state">● {function}</div>
+with a1:
+    st.markdown(
+        """
+        <div class="agent-card">
+            <div class="agent-title">RESEARCHER</div>
+            <div class="agent-description">
+                Pesquisa, coleta e organiza evidências
+                relevantes para o problema.
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with a2:
+    st.markdown(
+        """
+        <div class="agent-card">
+            <div class="agent-title">ANALYST</div>
+            <div class="agent-description">
+                Examina relações, padrões, hipóteses
+                e possíveis explicações.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with a3:
+    st.markdown(
+        """
+        <div class="agent-card">
+            <div class="agent-title">CRITIC</div>
+            <div class="agent-description">
+                Procura contradições, inconsistências
+                e pontos fracos.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with a4:
+    st.markdown(
+        """
+        <div class="agent-card">
+            <div class="agent-title">SYNTHESIZER</div>
+            <div class="agent-description">
+                Integra os resultados e produz
+                a síntese final.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
-st.markdown("")
+# ============================================================
+# IMAGEM PRINCIPAL
+# ============================================================
+
+st.write("")
+
+image_path = ROOT / "assets" / "technocracysi.png"
+
+if image_path.exists():
+
+    st.markdown(
+        '<div class="hero-frame">',
+        unsafe_allow_html=True
+    )
+
+    st.image(
+        str(image_path),
+        use_container_width=True
+    )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
 # CHAT
 # ============================================================
+
+st.write("")
+
+st.divider()
+
+from core.brain import ask
+
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -260,7 +525,6 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
 
     with st.chat_message(message["role"]):
-
         st.markdown(message["content"])
 
 
@@ -274,7 +538,7 @@ if prompt:
     st.session_state.messages.append(
         {
             "role": "user",
-            "content": prompt,
+            "content": prompt
         }
     )
 
@@ -284,38 +548,56 @@ if prompt:
     with st.chat_message("assistant"):
 
         with st.spinner(
-            "TECHNOCRACYSI ANALISANDO..."
+            "TECHNOCRACYSI PROCESSANDO..."
         ):
 
             try:
 
                 response = ask(prompt)
 
+                if response is None:
+                    response = (
+                        "O sistema não retornou uma resposta."
+                    )
+
+                response = str(response)
+
                 st.markdown(response)
 
                 st.session_state.messages.append(
                     {
                         "role": "assistant",
-                        "content": response,
+                        "content": response
                     }
                 )
 
-            except Exception as error:
+            except Exception as e:
 
                 error_message = (
-                    "Não foi possível concluir a operação.\n\n"
-                    f"`{type(error).__name__}: {error}`"
+                    "### ERRO DO SISTEMA\n\n"
+                    f"`{type(e).__name__}: {e}`"
                 )
 
                 st.error(error_message)
+
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": error_message
+                    }
+                )
 
 
 # ============================================================
 # FOOTER
 # ============================================================
 
-st.markdown("---")
-
-st.caption(
-    "TECHNOCRACYSI • Cognitive Intelligence System"
+st.markdown(
+    """
+    <div class="tech-footer">
+        TECHNOCRACYSI · COGNITIVE INTELLIGENCE SYSTEM
+    </div>
+    """,
+    unsafe_allow_html=True
 )
+'@ | Set-Content ".\app.py" -Encoding UTF8
