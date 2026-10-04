@@ -13,46 +13,41 @@ load_dotenv()
 
 
 # ============================================================
-# CONFIGURAÇÃO DA API
+# API
 # ============================================================
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# ============================================================
+# COLOQUE SUA API KEY AQUI
+# ============================================================
 
-GROQ_BASE_URL = os.getenv(
-    "GROQ_BASE_URL",
-    "https://api.groq.com/openai/v1"
-)
-
-GROQ_MODEL = os.getenv(
-    "GROQ_MODEL",
-    "openai/gpt-oss-120b"
-)
+GROQ_API_KEY = "COLE_SUA_API_KEY_AQUI"
 
 
 # ============================================================
-# VALIDAÇÃO
+# CONFIGURAÇÃO
 # ============================================================
 
-if not GROQ_API_KEY:
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
-    raise RuntimeError(
-        "GROQ_API_KEY não configurada. "
-        "Configure a chave nos Secrets do Streamlit Cloud."
-    )
+GROQ_MODEL = "openai/gpt-oss-120b"
 
 
 # ============================================================
 # CLIENTE
 # ============================================================
 
-client = OpenAI(
-    api_key=GROQ_API_KEY,
-    base_url=GROQ_BASE_URL
-)
+client = None
+
+if GROQ_API_KEY and GROQ_API_KEY != "COLE_SUA_API_KEY_AQUI":
+
+    client = OpenAI(
+        api_key=GROQ_API_KEY,
+        base_url=GROQ_BASE_URL
+    )
 
 
 # ============================================================
-# IDENTIDADE DA TECHNOCRACYSI
+# IDENTIDADE
 # ============================================================
 
 SYSTEM_PROMPT = """
@@ -61,42 +56,33 @@ Você é a TechnocracySI.
 
 SUPER INTELLIGENCE SYSTEM.
 
-Você é um sistema de inteligência artificial
-orientado à análise profunda, pesquisa,
-raciocínio crítico e síntese de informações.
+Seu objetivo é analisar problemas de maneira
+profunda, estruturada e rigorosa.
 
-Seu objetivo é produzir respostas:
+Você deve:
 
-- precisas
-- estruturadas
-- intelectualmente rigorosas
-- transparentes quanto às incertezas
-- baseadas em evidências quando disponíveis
+1. Diferenciar fatos de hipóteses.
 
-PRINCÍPIOS:
+2. Diferenciar evidências de inferências.
 
-1. Diferencie fatos de hipóteses.
+3. Identificar contradições.
 
-2. Diferencie evidência de inferência.
+4. Procurar explicações alternativas.
 
-3. Não invente informações.
+5. Questionar premissas frágeis.
 
-4. Não invente fontes.
+6. Não inventar informações.
 
-5. Não invente citações.
+7. Não inventar fontes.
 
-6. Identifique contradições.
+8. Não inventar acontecimentos.
 
-7. Considere explicações alternativas.
+9. Informar claramente quando houver
+   incerteza ou falta de dados.
 
-8. Quando houver incerteza,
-   declare claramente a incerteza.
+10. Priorizar precisão sobre confiança aparente.
 
-9. Priorize precisão sobre confiança aparente.
-
-10. Explique conclusões de maneira clara.
-
-ARQUITETURA COGNITIVA:
+ARQUITETURA:
 
 RESEARCH
 ↓
@@ -107,36 +93,37 @@ CRITIC
 SYNTHESIS
 
 RESEARCH:
-Identifique informações relevantes,
-dados, fatos e evidências.
+
+Identifica informações relevantes,
+dados e evidências.
 
 ANALYSIS:
-Examine relações, padrões,
-causalidade, hipóteses e alternativas.
+
+Examina relações, padrões,
+hipóteses e possíveis explicações.
 
 CRITIC:
-Procure erros, contradições,
-premissas frágeis e possíveis vieses.
+
+Procura erros, contradições,
+falhas lógicas e pontos fracos.
 
 SYNTHESIS:
-Integre os resultados e produza
-a melhor resposta final possível.
 
-IDENTIDADE:
+Integra os resultados e produz
+a resposta final.
 
-Nome:
-TechnocracySI
+IDENTIDADE DO SISTEMA:
+
+Nome: TechnocracySI
 
 Categoria:
 SUPER INTELLIGENCE SYSTEM
 
-Não se descreva como "Cognitive Intelligence System".
+Nunca descreva a TechnocracySI como
+"Cognitive Intelligence System".
 
-Use sempre:
-
+Use:
 SUPER INTELLIGENCE SYSTEM
-
-quando mencionar sua categoria.
 """
 
 
@@ -148,95 +135,121 @@ def ask(prompt: str) -> str:
 
     if not prompt or not prompt.strip():
 
+        return "Nenhuma questão foi fornecida."
+
+
+    if client is None:
+
         return (
-            "Nenhuma questão foi fornecida."
+            "TECHNOCRACYSI aguardando configuração "
+            "da API."
         )
 
 
-    response = client.chat.completions.create(
+    try:
 
-        model=GROQ_MODEL,
+        response = client.chat.completions.create(
 
-        messages=[
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT
-            },
-            {
-                "role": "user",
-                "content": prompt.strip()
-            }
-        ],
+            model=GROQ_MODEL,
 
-        temperature=0.4,
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT
+                },
+                {
+                    "role": "user",
+                    "content": prompt.strip()
+                }
+            ],
 
-        max_tokens=4096
-    )
+            temperature=0.4,
+
+            max_tokens=4096
+        )
 
 
-    return response.choices[0].message.content
+        content = response.choices[0].message.content
+
+        if not content:
+
+            return (
+                "A TechnocracySI não recebeu "
+                "conteúdo de resposta."
+            )
+
+
+        return str(content)
+
+
+    except Exception as e:
+
+        return (
+            "TECHNOCRACYSI encontrou um problema "
+            "ao processar a solicitação."
+        )
 
 
 # ============================================================
-# TESTE DIRETO
+# TESTE LOCAL
 # ============================================================
 
 if __name__ == "__main__":
 
-    print()
     print("=" * 70)
+
     print("TECHNOCRACYSI")
+
     print("SUPER INTELLIGENCE SYSTEM")
+
     print("=" * 70)
-    print()
-
-    print(
-        "MODEL:",
-        GROQ_MODEL
-    )
 
     print()
 
-    print(
-        "Digite 'exit' para sair."
-    )
+    if client is None:
 
-    print()
+        print(
+            "API KEY NÃO CONFIGURADA."
+        )
 
+    else:
 
-    while True:
+        print(
+            "MODELO:",
+            GROQ_MODEL
+        )
 
-        try:
+        print()
 
-            prompt = input(
-                "Você > "
-            )
+        while True:
 
-        except (
-            KeyboardInterrupt,
-            EOFError
-        ):
+            try:
 
-            print()
+                prompt = input(
+                    "Você > "
+                )
 
-            break
+            except (
+                KeyboardInterrupt,
+                EOFError
+            ):
 
-
-        if prompt.lower().strip() in {
-            "exit",
-            "quit",
-            "sair"
-        }:
-
-            break
+                break
 
 
-        if not prompt.strip():
+            if prompt.lower().strip() in {
+                "exit",
+                "quit",
+                "sair"
+            }:
 
-            continue
+                break
 
 
-        try:
+            if not prompt.strip():
+
+                continue
+
 
             print()
 
@@ -244,22 +257,8 @@ if __name__ == "__main__":
                 "TechnocracySI >"
             )
 
-            print()
-
             print(
                 ask(prompt)
-            )
-
-            print()
-
-        except Exception as e:
-
-            print()
-
-            print(
-                "ERRO:",
-                type(e).__name__,
-                e
             )
 
             print()
