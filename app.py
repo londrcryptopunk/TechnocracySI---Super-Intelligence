@@ -1,4 +1,3 @@
-@'
 import os
 from pathlib import Path
 
@@ -11,21 +10,26 @@ ROOT = Path(__file__).resolve().parent
 # CONFIGURAÇÃO
 # ============================================================
 
+# Carrega o .env quando executado localmente.
 load_dotenv(ROOT / ".env")
 
-# Streamlit Cloud pode fornecer secrets.
-# Localmente, o .env continua sendo suficiente.
+# No Streamlit Cloud, os Secrets podem sobrescrever
+# as variáveis carregadas pelo .env.
 try:
-    secrets = st.secrets
+    if "GROQ_API_KEY" in st.secrets:
+        os.environ["GROQ_API_KEY"] = str(
+            st.secrets["GROQ_API_KEY"]
+        )
 
-    if "GROQ_API_KEY" in secrets:
-        os.environ["GROQ_API_KEY"] = str(secrets["GROQ_API_KEY"])
+    if "GROQ_MODEL" in st.secrets:
+        os.environ["GROQ_MODEL"] = str(
+            st.secrets["GROQ_MODEL"]
+        )
 
-    if "GROQ_MODEL" in secrets:
-        os.environ["GROQ_MODEL"] = str(secrets["GROQ_MODEL"])
-
-    if "GROQ_BASE_URL" in secrets:
-        os.environ["GROQ_BASE_URL"] = str(secrets["GROQ_BASE_URL"])
+    if "GROQ_BASE_URL" in st.secrets:
+        os.environ["GROQ_BASE_URL"] = str(
+            st.secrets["GROQ_BASE_URL"]
+        )
 
 except Exception:
     pass
@@ -73,7 +77,7 @@ st.markdown(
     }
 
     [data-testid="stHeader"] {
-        background: rgba(0,0,0,0);
+        background: rgba(0, 0, 0, 0);
     }
 
     /* ======================================================
@@ -106,8 +110,8 @@ st.markdown(
         color: #f2f2f2;
 
         text-shadow:
-            0 0 8px rgba(255,255,255,0.20),
-            0 0 30px rgba(255,255,255,0.08);
+            0 0 8px rgba(255, 255, 255, 0.20),
+            0 0 30px rgba(255, 255, 255, 0.08);
 
         margin-top: 1rem;
         margin-bottom: 0;
@@ -153,7 +157,7 @@ st.markdown(
         letter-spacing: 0.15em;
 
         box-shadow:
-            0 0 25px rgba(255,255,255,0.025);
+            0 0 25px rgba(255, 255, 255, 0.025);
 
         transition: all 0.2s ease;
     }
@@ -162,11 +166,11 @@ st.markdown(
         border-color: #444444;
 
         box-shadow:
-            0 0 30px rgba(255,255,255,0.06);
+            0 0 30px rgba(255, 255, 255, 0.06);
     }
 
     /* ======================================================
-       AGENTS
+       AGENTES
        ====================================================== */
 
     .agent-card {
@@ -186,8 +190,8 @@ st.markdown(
         min-height: 125px;
 
         box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.025),
-            0 8px 30px rgba(0,0,0,0.35);
+            inset 0 1px 0 rgba(255, 255, 255, 0.025),
+            0 8px 30px rgba(0, 0, 0, 0.35);
 
         transition:
             transform 0.2s ease,
@@ -267,7 +271,7 @@ st.markdown(
     }
 
     /* ======================================================
-       IMAGEM / LOGO
+       IMAGEM PRINCIPAL
        ====================================================== */
 
     .hero-frame {
@@ -280,7 +284,10 @@ st.markdown(
         background: #050505;
 
         box-shadow:
-            0 15px 50px rgba(0,0,0,0.5);
+            0 15px 50px rgba(0, 0, 0, 0.5);
+
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     }
 
     /* ======================================================
@@ -313,7 +320,7 @@ st.markdown(
 
 with st.sidebar:
 
-    st.markdown("## ◉ TECHNOCΛCYSI")
+    st.markdown("## ◉ TECHNOCRACYSI")
 
     st.caption("COGNITIVE INTELLIGENCE SYSTEM")
 
@@ -379,7 +386,9 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="tech-subtitle">COGNITIVE INTELLIGENCE SYSTEM</div>',
+    '<div class="tech-subtitle">'
+    'COGNITIVE INTELLIGENCE SYSTEM'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -391,26 +400,38 @@ st.markdown(
 c1, c2, c3, c4 = st.columns(4)
 
 with c1:
+
     st.markdown(
-        '<div class="system-status">● SYSTEM ONLINE</div>',
+        '<div class="system-status">'
+        '● SYSTEM ONLINE'
+        '</div>',
         unsafe_allow_html=True
     )
 
 with c2:
+
     st.markdown(
-        '<div class="system-status">RESEARCH</div>',
+        '<div class="system-status">'
+        'RESEARCH'
+        '</div>',
         unsafe_allow_html=True
     )
 
 with c3:
+
     st.markdown(
-        '<div class="system-status">ANALYSIS</div>',
+        '<div class="system-status">'
+        'ANALYSIS'
+        '</div>',
         unsafe_allow_html=True
     )
 
 with c4:
+
     st.markdown(
-        '<div class="system-status">SYNTHESIS</div>',
+        '<div class="system-status">'
+        'SYNTHESIS'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -425,56 +446,83 @@ st.write("")
 a1, a2, a3, a4 = st.columns(4)
 
 with a1:
+
     st.markdown(
         """
         <div class="agent-card">
-            <div class="agent-title">RESEARCHER</div>
+
+            <div class="agent-title">
+                RESEARCHER
+            </div>
+
             <div class="agent-description">
                 Pesquisa, coleta e organiza evidências
                 relevantes para o problema.
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
 
+
 with a2:
+
     st.markdown(
         """
         <div class="agent-card">
-            <div class="agent-title">ANALYST</div>
+
+            <div class="agent-title">
+                ANALYST
+            </div>
+
             <div class="agent-description">
                 Examina relações, padrões, hipóteses
                 e possíveis explicações.
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
 
+
 with a3:
+
     st.markdown(
         """
         <div class="agent-card">
-            <div class="agent-title">CRITIC</div>
+
+            <div class="agent-title">
+                CRITIC
+            </div>
+
             <div class="agent-description">
                 Procura contradições, inconsistências
                 e pontos fracos.
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
     )
 
+
 with a4:
+
     st.markdown(
         """
         <div class="agent-card">
-            <div class="agent-title">SYNTHESIZER</div>
+
+            <div class="agent-title">
+                SYNTHESIZER
+            </div>
+
             <div class="agent-description">
                 Integra os resultados e produz
                 a síntese final.
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
@@ -519,19 +567,35 @@ from core.brain import ask
 
 
 if "messages" not in st.session_state:
+
     st.session_state.messages = []
 
+
+# ============================================================
+# HISTÓRICO
+# ============================================================
 
 for message in st.session_state.messages:
 
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
 
+        st.markdown(
+            message["content"]
+        )
+
+
+# ============================================================
+# ENTRADA
+# ============================================================
 
 prompt = st.chat_input(
     "Digite uma questão para a TechnocracySI..."
 )
 
+
+# ============================================================
+# PROCESSAMENTO
+# ============================================================
 
 if prompt:
 
@@ -543,6 +607,7 @@ if prompt:
     )
 
     with st.chat_message("user"):
+
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
@@ -556,8 +621,10 @@ if prompt:
                 response = ask(prompt)
 
                 if response is None:
+
                     response = (
-                        "O sistema não retornou uma resposta."
+                        "O sistema não retornou "
+                        "uma resposta."
                     )
 
                 response = str(response)
@@ -578,7 +645,9 @@ if prompt:
                     f"`{type(e).__name__}: {e}`"
                 )
 
-                st.error(error_message)
+                st.error(
+                    error_message
+                )
 
                 st.session_state.messages.append(
                     {
@@ -600,4 +669,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-'@ | Set-Content ".\app.py" -Encoding UTF8
