@@ -1,21 +1,19 @@
-﻿import os
+import os
 
 from dotenv import load_dotenv
-from openai import AsyncOpenAI
+from openai import OpenAI
 
-from agents import (
-    Agent,
-    Runner,
-    OpenAIChatCompletionsModel,
-    set_tracing_disabled,
-)
 
+# ============================================================
+# TECHNOCRACYSI
+# SUPER INTELLIGENCE SYSTEM
+# ============================================================
 
 load_dotenv()
 
 
 # ============================================================
-# CONFIGURAÇÃO
+# CONFIGURAÇÃO DA API
 # ============================================================
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -31,36 +29,25 @@ GROQ_MODEL = os.getenv(
 )
 
 
+# ============================================================
+# VALIDAÇÃO
+# ============================================================
+
 if not GROQ_API_KEY:
+
     raise RuntimeError(
-        "GROQ_API_KEY não encontrada no arquivo .env"
+        "GROQ_API_KEY não configurada. "
+        "Configure a chave nos Secrets do Streamlit Cloud."
     )
 
 
 # ============================================================
-# CLIENTE GROQ
+# CLIENTE
 # ============================================================
 
-client = AsyncOpenAI(
+client = OpenAI(
     api_key=GROQ_API_KEY,
-    base_url=GROQ_BASE_URL,
-)
-
-
-# ============================================================
-# TRACING
-# ============================================================
-
-set_tracing_disabled(True)
-
-
-# ============================================================
-# MODELO
-# ============================================================
-
-model = OpenAIChatCompletionsModel(
-    model=GROQ_MODEL,
-    openai_client=client,
+    base_url=GROQ_BASE_URL
 )
 
 
@@ -68,189 +55,211 @@ model = OpenAIChatCompletionsModel(
 # IDENTIDADE DA TECHNOCRACYSI
 # ============================================================
 
-SYSTEM_CORE = """
+SYSTEM_PROMPT = """
 
 Você é a TechnocracySI.
 
-Você é uma inteligência artificial modular orientada a:
+SUPER INTELLIGENCE SYSTEM.
 
-- raciocínio;
-- investigação;
-- análise;
-- síntese;
-- crítica;
-- resolução de problemas;
-- aprendizagem baseada em evidências.
+Você é um sistema de inteligência artificial
+orientado à análise profunda, pesquisa,
+raciocínio crítico e síntese de informações.
+
+Seu objetivo é produzir respostas:
+
+- precisas
+- estruturadas
+- intelectualmente rigorosas
+- transparentes quanto às incertezas
+- baseadas em evidências quando disponíveis
 
 PRINCÍPIOS:
 
-1. Nunca trate uma hipótese como fato.
+1. Diferencie fatos de hipóteses.
 
-2. Diferencie:
+2. Diferencie evidência de inferência.
 
-   FATO
-   EVIDÊNCIA
-   INFERÊNCIA
-   HIPÓTESE
-   ESPECULAÇÃO
+3. Não invente informações.
 
-3. Procure contradições.
+4. Não invente fontes.
 
-4. Procure explicações alternativas.
+5. Não invente citações.
 
-5. Não invente informações.
+6. Identifique contradições.
 
-6. Quando não houver evidência suficiente,
-   declare explicitamente a incerteza.
+7. Considere explicações alternativas.
 
-7. Divida problemas complexos em partes menores.
+8. Quando houver incerteza,
+   declare claramente a incerteza.
 
-8. Analise as premissas antes das conclusões.
+9. Priorize precisão sobre confiança aparente.
 
-9. Priorize precisão.
-
-10. Não invente fontes ou resultados de pesquisas.
+10. Explique conclusões de maneira clara.
 
 ARQUITETURA COGNITIVA:
 
-OBSERVAÇÃO
-    ↓
-EVIDÊNCIAS
-    ↓
-HIPÓTESES
-    ↓
-ANÁLISE
-    ↓
-CONTRA-ARGUMENTOS
-    ↓
-SÍNTESE
-    ↓
-CONCLUSÃO
+RESEARCH
+↓
+ANALYSIS
+↓
+CRITIC
+↓
+SYNTHESIS
+
+RESEARCH:
+Identifique informações relevantes,
+dados, fatos e evidências.
+
+ANALYSIS:
+Examine relações, padrões,
+causalidade, hipóteses e alternativas.
+
+CRITIC:
+Procure erros, contradições,
+premissas frágeis e possíveis vieses.
+
+SYNTHESIS:
+Integre os resultados e produza
+a melhor resposta final possível.
 
 IDENTIDADE:
 
-Nome: TechnocracySI
+Nome:
+TechnocracySI
 
-Personalidade:
+Categoria:
+SUPER INTELLIGENCE SYSTEM
 
-- científica;
-- tecnológica;
-- estratégica;
-- objetiva;
-- investigativa;
-- sofisticada;
-- futurista.
+Não se descreva como "Cognitive Intelligence System".
 
-Você não deve simplesmente concordar com o usuário.
+Use sempre:
 
-Quando o usuário estiver equivocado,
-explique claramente o motivo.
+SUPER INTELLIGENCE SYSTEM
 
-Quando os dados forem insuficientes,
-diga:
-
-"Não há evidência suficiente para concluir isso."
-
-OBJETIVO:
-
-Aumentar a qualidade do raciocínio humano.
-
-Você não deve fingir possuir ferramentas,
-dados ou informações que não possui.
+quando mencionar sua categoria.
 """
-
-
-# ============================================================
-# AGENTE PRINCIPAL
-# ============================================================
-
-technocracysi = Agent(
-    name="TechnocracySI",
-    instructions=SYSTEM_CORE,
-    model=model,
-)
 
 
 # ============================================================
 # FUNÇÃO PRINCIPAL
 # ============================================================
 
-def ask(question: str) -> str:
+def ask(prompt: str) -> str:
 
-    result = Runner.run_sync(
-        technocracysi,
-        question
+    if not prompt or not prompt.strip():
+
+        return (
+            "Nenhuma questão foi fornecida."
+        )
+
+
+    response = client.chat.completions.create(
+
+        model=GROQ_MODEL,
+
+        messages=[
+            {
+                "role": "system",
+                "content": SYSTEM_PROMPT
+            },
+            {
+                "role": "user",
+                "content": prompt.strip()
+            }
+        ],
+
+        temperature=0.4,
+
+        max_tokens=4096
     )
 
-    return result.final_output
+
+    return response.choices[0].message.content
 
 
 # ============================================================
-# TERMINAL
+# TESTE DIRETO
 # ============================================================
 
-def main():
+if __name__ == "__main__":
 
     print()
-    print("=" * 72)
-    print("                    TECHNOCRACYSI")
-    print("                  INTELLIGENCE CORE")
-    print("=" * 72)
+    print("=" * 70)
+    print("TECHNOCRACYSI")
+    print("SUPER INTELLIGENCE SYSTEM")
+    print("=" * 70)
     print()
-    print("Provider : Groq")
-    print("Model    :", GROQ_MODEL)
+
+    print(
+        "MODEL:",
+        GROQ_MODEL
+    )
+
     print()
-    print("Digite sua pergunta.")
-    print("Digite 'exit' para sair.")
+
+    print(
+        "Digite 'exit' para sair."
+    )
+
     print()
+
 
     while True:
 
         try:
 
-            question = input("Você > ").strip()
+            prompt = input(
+                "Você > "
+            )
 
-            if not question:
-                continue
-
-            if question.lower() in {
-                "exit",
-                "quit",
-                "sair"
-            }:
-
-                print()
-                print("TECHNOCRACYSI encerrada.")
-                break
+        except (
+            KeyboardInterrupt,
+            EOFError
+        ):
 
             print()
-            print("TECHNOCRACYSI processando...")
-            print()
 
-            answer = ask(question)
-
-            print("TECHNOCRACYSI >")
-            print(answer)
-            print()
-
-        except KeyboardInterrupt:
-
-            print()
-            print()
-            print("TECHNOCRACYSI encerrada.")
             break
 
-        except Exception as error:
+
+        if prompt.lower().strip() in {
+            "exit",
+            "quit",
+            "sair"
+        }:
+
+            break
+
+
+        if not prompt.strip():
+
+            continue
+
+
+        try:
 
             print()
-            print("ERRO")
-            print("-" * 72)
-            print(type(error).__name__)
-            print(str(error))
-            print("-" * 72)
+
+            print(
+                "TechnocracySI >"
+            )
+
             print()
 
+            print(
+                ask(prompt)
+            )
 
-if __name__ == "__main__":
-    main()
+            print()
 
+        except Exception as e:
+
+            print()
+
+            print(
+                "ERRO:",
+                type(e).__name__,
+                e
+            )
+
+            print()
