@@ -11,10 +11,27 @@ from dotenv import load_dotenv
 # ============================================================
 
 ROOT = Path(__file__).resolve().parent
-ASSETS = ROOT / "assets"
 
-CAPA = ASSETS / "capa 1.jpg"
-LOGO = ASSETS / "logo 1.jpg"
+
+# ============================================================
+# LOCALIZAÇÃO DAS IMAGENS
+# ============================================================
+
+def encontrar_imagem(nome):
+    candidatos = [
+        ROOT / "assets" / nome,
+        ROOT / nome,
+    ]
+
+    for caminho in candidatos:
+        if caminho.exists():
+            return caminho
+
+    return None
+
+
+CAPA = encontrar_imagem("capa 1.jpg")
+LOGO = encontrar_imagem("logo 1.jpg")
 
 
 # ============================================================
@@ -63,10 +80,10 @@ st.set_page_config(
 
 
 # ============================================================
-# LOGO DO STREAMLIT
+# LOGO
 # ============================================================
 
-if LOGO.exists():
+if LOGO is not None:
 
     st.logo(
         str(LOGO),
@@ -97,18 +114,10 @@ st.markdown(
 }
 
 
-/* =========================================================
-   HEADER
-   ========================================================= */
-
 [data-testid="stHeader"] {
     background: rgba(0,0,0,0);
 }
 
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
 
 section[data-testid="stSidebar"] {
 
@@ -122,10 +131,6 @@ section[data-testid="stSidebar"] {
     border-right: 1px solid #222222;
 }
 
-
-/* =========================================================
-   TITULO
-   ========================================================= */
 
 .tech-title {
 
@@ -165,10 +170,6 @@ section[data-testid="stSidebar"] {
 }
 
 
-/* =========================================================
-   STATUS
-   ========================================================= */
-
 .system-status {
 
     border: 1px solid #252525;
@@ -193,10 +194,6 @@ section[data-testid="stSidebar"] {
     letter-spacing: 0.15em;
 }
 
-
-/* =========================================================
-   AGENTES
-   ========================================================= */
 
 .agent-card {
 
@@ -245,10 +242,6 @@ section[data-testid="stSidebar"] {
 }
 
 
-/* =========================================================
-   CAPA
-   ========================================================= */
-
 .hero-frame {
 
     border: 1px solid #222222;
@@ -268,10 +261,6 @@ section[data-testid="stSidebar"] {
 }
 
 
-/* =========================================================
-   CHAT
-   ========================================================= */
-
 [data-testid="stChatMessage"] {
 
     background: #070707;
@@ -281,10 +270,6 @@ section[data-testid="stSidebar"] {
     border-radius: 12px;
 }
 
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
 
 .tech-footer {
 
@@ -313,7 +298,7 @@ section[data-testid="stSidebar"] {
 
 with st.sidebar:
 
-    if LOGO.exists():
+    if LOGO is not None:
 
         st.image(
             str(LOGO),
@@ -339,10 +324,6 @@ with st.sidebar:
 **STATUS**
 
 ● ONLINE
-
-**ENGINE**
-
-Groq / OpenAI-compatible
 
 **ARCHITECTURE**
 
@@ -372,17 +353,6 @@ Research → Analysis → Critic → Synthesis
 
 `SYNTHESIS`
 """
-    )
-
-    st.divider()
-
-    model_name = os.getenv(
-        "GROQ_MODEL",
-        "modelo não configurado"
-    )
-
-    st.caption(
-        f"MODEL: {model_name}"
     )
 
 
@@ -559,7 +529,7 @@ a síntese final.
 st.write("")
 
 
-if CAPA.exists():
+if CAPA is not None:
 
     st.markdown(
         '<div class="hero-frame">',
@@ -568,7 +538,7 @@ if CAPA.exists():
 
     st.image(
         str(CAPA),
-        use_container_width=True
+        width="stretch"
     )
 
     st.markdown(
@@ -576,33 +546,18 @@ if CAPA.exists():
         unsafe_allow_html=True
     )
 
-else:
-
-    st.warning(
-        "Imagem de capa não encontrada."
-    )
-
-    st.caption(
-        f"Caminho esperado: {CAPA}"
-    )
-
 
 # ============================================================
-# CHAT
+# CÉREBRO
 # ============================================================
 
-st.divider()
+try:
 
-st.markdown(
-    "## INTERFACE DE INTELIGÊNCIA"
-)
+    from core.brain import ask
 
+except Exception:
 
-# ============================================================
-# IMPORTAÇÃO DO CÉREBRO
-# ============================================================
-
-from core.brain import ask
+    ask = None
 
 
 # ============================================================
@@ -662,38 +617,37 @@ if prompt:
             "TECHNOCRACYSI PROCESSANDO..."
         ):
 
-            try:
+            if ask is None:
 
-                response = ask(prompt)
-
-                response = str(response)
-
-                st.markdown(response)
-
-                st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": response
-                    }
+                response = (
+                    "A TechnocracySI está "
+                    "temporariamente indisponível."
                 )
 
-            except Exception as e:
+            else:
 
-                error_message = (
-                    "### ERRO DO SISTEMA\n\n"
-                    f"`{type(e).__name__}: {e}`"
-                )
+                try:
 
-                st.error(
-                    error_message
-                )
+                    response = ask(prompt)
 
-                st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": error_message
-                    }
-                )
+                    response = str(response)
+
+                except Exception:
+
+                    response = (
+                        "Não foi possível processar "
+                        "esta solicitação neste momento."
+                    )
+
+
+            st.markdown(response)
+
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content": response
+                }
+            )
 
 
 # ============================================================
