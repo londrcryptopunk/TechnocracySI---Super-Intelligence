@@ -20,7 +20,7 @@ load_dotenv()
 # COLOQUE SUA API KEY AQUI
 # ============================================================
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 
 
 # ============================================================
